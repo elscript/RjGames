@@ -12,23 +12,52 @@ namespace UnitBehavior
 		private int _tileX;
 		private int _tileY;
 		private readonly Scene _scene;
+		private int _health;
+		private int _id;
+		private KeyValuePair<int, int> _unitSize;
+
+		public UnitState State { get; private set; }
+
+		public KeyValuePair<int, int> UnitSize
+		{
+			get { return _unitSize; }
+			private set
+			{
+				// минимальный размер не может быть меньше 1
+				if (value.Key < 1 || value.Value < 1)
+					_unitSize = new KeyValuePair<int, int>(1, 1);
+				else
+					_unitSize = value;
+			}
+		}
 
 		/// <summary>
 		/// Словарь параметров
 		/// </summary>
-		protected Dictionary<string, int> Params;
+		private Dictionary<string, int> _params;
 
 		/// <summary>
 		/// Конструктор юнита
 		/// </summary>
 		/// <param name="scene">Сцена, в которую помещается юнит</param>
-		protected AUnit(Scene scene)
+		/// <param name="unitId">Уникальный идентификатор юнита</param>
+		/// <param name="parameters">Параметры</param>
+		/// <param name="x">X-координата внутри тайла</param>
+		/// <param name="y">Y-координата внутри тайла</param>
+		/// <param name="tileX">X-координата стартового тайла</param>
+		/// <param name="tileY">Y-координата стартового тайла</param>
+		/// <param name="unitSize">KeyValuePair, с размером по x и по y соответственно</param>
+		protected AUnit(Scene scene, int unitId, Dictionary<string, int> parameters, int x, int y, int tileX, int tileY, KeyValuePair<int, int> unitSize)
 		{
 			_scene = scene;
-			Params = new Dictionary<string, int>();
+			_params = parameters;
+			_id = unitId;
+			UnitSize = unitSize;
 			this.OnInit();
 		}
-		
+
+		public ILogic Logic { get; private set; }
+
 		public int GetX()
 		{
 			return _x;
@@ -36,17 +65,17 @@ namespace UnitBehavior
 
 		public int GetY()
 		{
-			return _x;
+			return _y;
 		}
 
 		public int GetTileX()
 		{
-			throw new NotImplementedException();
+			return _tileX;
 		}
 
 		public int GetTileY()
 		{
-			throw new NotImplementedException();
+			return _tileY;
 		}
 
 		public bool MoveToTile(int targettilex, int targettiley)
@@ -63,27 +92,34 @@ namespace UnitBehavior
 
 		public bool CanMoveToTile(int targettilex, int targettiley)
 		{
-			throw new NotImplementedException();
+			// Проверяем, что тайл соседний (условие задачи)
+			if (Math.Abs(_tileX - targettilex) == 1 && Math.Abs(_tileY - targettiley) == 1)
+			{
+				//TODO Проверяем нет ли барьеров на пути
+				//if ()
+			}
+			return false;
 		}
 
 		public void ReceiveDamage(int damage)
 		{
-			throw new NotImplementedException();
+			var resultHP = _health - damage;
+			if (resultHP < 0)
+			{
+				_health = 0;
+				State = UnitState.Die;
+			}
 		}
 
 		public int GetHealth()
 		{
-			throw new NotImplementedException();
+			return _health;
 		}
 
 		public void Die()
 		{
-			throw new NotImplementedException();
+			State = UnitState.Die;
 		}
-
-		public abstract void PlayAnimation(string state, int offset, bool loop);
-
-		public abstract void StopAnimation();
 
 		public Scene GetScene()
 		{
@@ -92,17 +128,24 @@ namespace UnitBehavior
 
 		public int GetId()
 		{
-			throw new NotImplementedException();
+			return _id;
 		}
 
 		public int GetParam(string type)
 		{
-			throw new NotImplementedException();
+			int value;
+			if (!_params.TryGetValue(type, out value))
+				return -1;
+			else
+				return value;
 		}
 
 		public void SetParam(string type, int value)
 		{
-			throw new NotImplementedException();
+			if (_params.ContainsKey(type))
+				_params[type] = value;
+			else
+				_params.Add(type, value);
 		}
 
 		public abstract void OnInit();
@@ -113,6 +156,9 @@ namespace UnitBehavior
 
 		public abstract void OnDie();
 
-		public UnitState State { get; private set; }
+		public abstract void PlayAnimation(string state, int offset, bool loop);
+
+		public abstract void StopAnimation();
+
 	}
 }

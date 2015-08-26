@@ -6,27 +6,27 @@ using System.Threading;
 
 namespace UnitBehavior
 {
-	class UnitLogic
+	public class UnitLogic : ILogic
 	{
-		private IUnit _unit;
+		public IUnit Unit { get; private set; }
 
 		public UnitLogic(IUnit unit)
 		{
-			_unit = unit;
+			Unit = unit;
 		}
 
-		void Update()
+		public void Update()
 		{
-			switch (_unit.State)
+			switch (Unit.State)
 			{
 				case UnitState.Idle:
-					_unit.OnThink(); 
+					Unit.OnThink(); 
 					break;
 				case UnitState.Moving:
-					_unit.OnMoving(); 
+					Unit.OnMoving(); 
 					break;
 				case UnitState.Die:
-					_unit.OnDie(); 
+					Unit.OnDie(); 
 					break;
 				default:
 					break;

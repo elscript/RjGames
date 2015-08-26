@@ -12,20 +12,25 @@ namespace UnitBehavior
 		private Timer _timer;
 		private int _delay;
 		private int _period;
-		private List<IUnit> _units; 
+		private List<IUnit> _units;
+		private List<BarrierItem> _barriers;
+
+		public int TileSize { get; private set; }
 
 		/// <summary>
 		/// Конструктор сцены
 		/// </summary>
 		/// <param name="x">Размер в тайлах по x</param>
 		/// <param name="y">Размер в тайлах по y</param>
-		/// <param name="delay">Задержка перед вызовом таймера сцены</param>
-		/// <param name="period">Период таймера сцены</param>
-		public Scene(int x, int y, int delay, int period)
+		/// <param name="tileSize">Размер тайла</param>
+		/// <param name="delay">Задержка таймера</param>
+		/// <param name="period">Период таймера</param>
+		public Scene(int x, int y, int tileSize, int delay, int period)
 		{
 			X = x;
 			Y = y;
 			_units = new List<IUnit>();
+			_barriers = new List<BarrierItem>();
 		}
 
 		/// <summary>
@@ -69,9 +74,11 @@ namespace UnitBehavior
 		/// </summary>
 		/// <param name="unit"></param>
 		/// <returns></returns>
-		AUnit FindNearestEnemyUnit(IUnit unit)
+		IUnit FindNearestEnemyUnit(IUnit unit)
 		{
-			return null;
+			// Ищем первый попавшийся юнит, находящийся на смежном тайле или null, если таких нет
+			return _units.FirstOrDefault(currUnit => Math.Abs(currUnit.GetTileX() - unit.GetTileX()) == 1 
+				&& Math.Abs(currUnit.GetTileY() - unit.GetTileY()) == 1);
 		}
 
 		/// <summary>
@@ -84,7 +91,7 @@ namespace UnitBehavior
 		/// <returns>Квадрат расстояния между точками</returns>
 		int GetQuadDistance(int x1, int y1, int x2, int y2)
 		{
-			return 0;
+			return (int) (Math.Sqrt(x2 - x1) + Math.Sqrt(y2 - y1));
 		}
 
 		/// <summary>
@@ -95,7 +102,19 @@ namespace UnitBehavior
 		/// <returns>Наличие прямой линии</returns>
 		bool CanShoot(IUnit from, IUnit to)
 		{
-			return false;
+			// Сперва проверяем нет ли юнитов на линии
+			foreach (var unit in _units)
+			{
+				
+			}
+
+			// Затем нет ли преград на линии
+			foreach (var unit in _units)
+			{
+
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -116,6 +135,37 @@ namespace UnitBehavior
 		private static void Tick(object o = null)
 		{
 			_tick++;
+		}
+	}
+
+	/// <summary>
+	/// Препятствие
+	/// </summary>
+	public class BarrierItem
+	{
+		private int _x;
+		private int _y;
+		private int _tileX;
+		private int _tileY;
+
+		public int GetX()
+		{
+			return _x;
+		}
+
+		public int GetY()
+		{
+			return _y;
+		}
+
+		public int GetTileX()
+		{
+			return _tileX;
+		}
+
+		public int GetTileY()
+		{
+			return _tileY;
 		}
 	}
 }

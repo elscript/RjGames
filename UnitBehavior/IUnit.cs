@@ -7,6 +7,8 @@ namespace UnitBehavior
 {
 	public interface IUnit
 	{
+		ILogic Logic { get; }
+
 		/// <summary>
 		/// Возвращает X координату юнита, единицы измерения - одна сотая тайла
 		/// </summary>
@@ -95,6 +97,7 @@ namespace UnitBehavior
 
 		/// <summary>
 		/// Возвращает значение параметра из словаря юнита
+		/// или -1 если такого параметра нет
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns>Параметр указанного типа</returns>
@@ -127,6 +130,14 @@ namespace UnitBehavior
 		/// </summary>
 		void OnDie();
 
+		/// <summary>
+		/// Состояние юнита
+		/// </summary>
 		UnitState State { get; }
+
+		/// <summary>
+		/// Размер юнита (x, y)
+		/// </summary>
+		KeyValuePair<int, int> UnitSize { get; } 
 	}
 }
